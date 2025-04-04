@@ -1,0 +1,142 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  margin-top: 80px;
+  margin-bottom: 80px;
+  height: 90%;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 1000px;
+}
+
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 15px;
+}
+
+
+select, input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+
+label {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+}
+
+
+.distribucion-container {
+  background: #eef1f7;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+
+.parametros-container {
+  background: #eafaf1;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+
+.parametros-container input {
+  border: 1px solid #77c6a6;
+}
+
+
+.parametros-container div {
+  margin-bottom: 10px;
+}
+
+.parrafo-distribucion-default{
+  font-size: 14px;
+  color: #333;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.distribucion-parametros{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.boton-container{
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  margin-left: 5px;
+}
+
+.boton{
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.graphic-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.data-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.data-list{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  height: 300px;
+  overflow-y: auto;
+}
+
+.datos-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 85%;
+}
+
+.boton-csv{
+  background-color: #007bff;
+}
