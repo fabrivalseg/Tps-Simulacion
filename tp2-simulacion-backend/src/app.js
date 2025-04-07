@@ -8,5 +8,5 @@ app.use(cors());
 app.use("/generate", algorithmRouter);
 
 app.listen(3000, () => {
-    console.log("Servidor iniciado en el puerto 3000, fabri es re trolazo");
+    console.log("Servidor iniciado en el puerto 3000");
 });

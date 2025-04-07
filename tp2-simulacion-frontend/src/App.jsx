@@ -76,6 +76,7 @@ function App() {
         body: JSON.stringify({count,  mean, stdDev })
       })
       const data = await response.json()
+      console.log(data)
       setDatos(data)
       
     } else{
