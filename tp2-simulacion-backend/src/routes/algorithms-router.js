@@ -13,7 +13,7 @@ router.post('/uniform', (req, res) => {
   res.json(result);
 });
 
-router.post('/exponential', (req, res) => {
+router.post('/exponencial', (req, res) => {
   const lambda = parseFloat(req.body.lambda);
   const count = parseInt(req.body.count);
 
