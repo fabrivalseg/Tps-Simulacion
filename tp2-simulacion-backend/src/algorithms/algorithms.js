@@ -1,37 +1,65 @@
+import jStat from 'jstat';
+
+
 export default class RandomDistributions {
+    static randoms = [];
+    static distribucion = '';
+
     static uniform(min, max, count) {
-      return Array.from({ length: count }, () => Math.random() * (max - min) + min);
+      this.distribucion = 'uniform';
+      this.randoms = [];
+      const data = Array.from({ length: count }, () => {
+          const r = Math.random();
+          this.randoms.push(r);
+          return r * (max - min) + min;
+      });
+      return data;
     }
   
     static exponential(lambda, count) {
-      return Array.from({ length: count }, () => -Math.log(1 - Math.random()) / lambda);
+      this.distribucion = 'exponential';
+      this.randoms = [];
+      const data = Array.from({ length: count }, () => {
+        const r = Math.random();
+        this.randoms.push(r);
+        return -Math.log(1 - r) / lambda;
+      });
+      return data;
     }
-  
+
+
     static poisson(lambda, count) {
-      return Array.from({ length: count }, () => {
+      this.distribucion = 'poisson';
+      this.randoms = [];
+      const data = Array.from({ length: count }, () => {
         let L = Math.exp(-lambda);
         let k = 0;
         let p = 1;
-        do {
+        while (true) {
+          const r = Math.random();
+          this.randoms.push(r);
           k++;
-          p *= Math.random();
-        } while (p > L);
+          p *= r;
+          if (!(p > L)) break;
+        }
         return k - 1;
       });
+      return data;
     }
 
     static normal(mean, stdDev, count) {
-        return Array.from({ length: count }, () => {
-            let u1 = Math.random();
-            let u2 = Math.random();
-      
-            // Asegurarse de que u1 no sea cero para evitar log(0)
-            if (u1 === 0) u1 = Number.EPSILON;
-      
-            let z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-            return mean + z * stdDev;
-        });
-      }
+      this.distribucion = 'normal';
+      this.randoms = [];
+      const data = Array.from({ length: count }, () => {
+        let u1 = Math.random();
+        let u2 = Math.random();
+        this.randoms.push(u1, u2);
+        if (u1 === 0) u1 = Number.EPSILON;
+        const z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+        return mean + z * stdDev;
+      });
+      return data;
+    }
       
   
     // // Método de Box-Muller (genera pares)
@@ -68,5 +96,44 @@ export default class RandomDistributions {
     //     ? this.normalConvolution(mean, stdDev, count)
     //     : this.normalBoxMuller(mean, stdDev, count);
     // }
+
+
+    static chiSquaredTest() {
+      const n = this.randoms.length;
+      const k = Math.round(Math.sqrt(n));
+      const intervalWidth = 1 / k;
+  
+
+      const fo = new Array(k).fill(0);
+
+      this.randoms.forEach(value => {
+          let index = Math.floor(value / intervalWidth);
+          if (index >= k) index = k - 1; 
+          fo[index]++;
+      });
+  
+      const fe = n / k;
+  
+      const cValues = fo.map(obs => Math.pow(obs - fe, 2) / fe);
+      const chi = cValues.reduce((acc, c) => acc + c, 0);
+
+      const degreesOfFreedom = k - 1;
+
+      const { chisquare } = jStat;
+
+      const criticalValue05 = chisquare.inv(0.95, degreesOfFreedom);
+
+
+  
+      return {
+          chiSquared: chi,
+          expected: fe,
+          observed: fo,
+          cValues,
+          degreesOfFreedom,
+          criticalValue05,
+          hypothesisRejected: chi > criticalValue05
+      };
   }
   
+}

@@ -37,4 +37,9 @@ router.post('/normal', (req, res) => {
   res.json(result);
 });
 
+router.post('/chi-cuadrado', (req, res) => {
+  const result = RandomDistributions.chiSquaredTest();
+  res.json(result);
+});
+
 export default router;
