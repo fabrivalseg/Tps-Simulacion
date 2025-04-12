@@ -6,12 +6,21 @@ export function createInterval(data, k) {
   if (!Array.isArray(data) || data.length === 0) {
     throw new Error("Los datos deben ser un arreglo no vacío.");
   }
+  if (!data.every((value) => typeof value === "number")) {
+    throw new Error("Todos los elementos de los datos deben ser números.");
+  }
   if (typeof k !== "number" || k <= 0 || !Number.isInteger(k)) {
     throw new Error("k debe ser un número entero positivo.");
   }
 
   const min = Math.min(...data);
   const max = Math.max(...data);
+  if (min === max) {
+    throw new Error(
+      "Los datos deben tener valores distintos para crear intervalos."
+    );
+  }
+
   const intervalSize = (max - min) / k;
 
   const intervals = [];
@@ -26,6 +35,22 @@ export function createInterval(data, k) {
 
 // Calcula frecuencias observadas
 export function calculateFrequencies(data, intervals) {
+  if (!Array.isArray(data) || data.length === 0) {
+    throw new Error("Los datos deben ser un arreglo no vacío.");
+  }
+  if (!Array.isArray(intervals) || intervals.length === 0) {
+    throw new Error("Los intervalos deben ser un arreglo no vacío.");
+  }
+  if (
+    !intervals.every(
+      (interval) => Array.isArray(interval) && interval.length === 2
+    )
+  ) {
+    throw new Error(
+      "Cada intervalo debe ser un arreglo con dos valores [inicio, fin]."
+    );
+  }
+
   const frequencies = new Array(intervals.length).fill(0);
   data.forEach((value) => {
     for (let i = 0; i < intervals.length; i++) {
@@ -42,12 +67,29 @@ export function calculateFrequencies(data, intervals) {
 // --- Frecuencias esperadas ---
 // Uniforme
 export function expectedFrequenciesUniform(N, intervals) {
+  if (typeof N !== "number" || N <= 0 || !Number.isInteger(N)) {
+    throw new Error("N debe ser un número entero positivo.");
+  }
+  if (!Array.isArray(intervals) || intervals.length === 0) {
+    throw new Error("Los intervalos deben ser un arreglo no vacío.");
+  }
+
   const p = 1 / intervals.length;
   return intervals.map(() => N * p);
 }
 
 // Exponencial
 export function expectedFrequenciesExponential(N, intervals, lambda) {
+  if (typeof N !== "number" || N <= 0 || !Number.isInteger(N)) {
+    throw new Error("N debe ser un número entero positivo.");
+  }
+  if (!Array.isArray(intervals) || intervals.length === 0) {
+    throw new Error("Los intervalos deben ser un arreglo no vacío.");
+  }
+  if (typeof lambda !== "number" || lambda <= 0) {
+    throw new Error("Lambda debe ser un número positivo.");
+  }
+
   return intervals.map(([start, end]) => {
     const prob = Math.exp(-lambda * start) - Math.exp(-lambda * end);
     return N * prob;
@@ -77,6 +119,19 @@ function erf(x) {
 }
 
 export function expectedFrequenciesNormal(N, intervals, mean, std) {
+  if (typeof N !== "number" || N <= 0 || !Number.isInteger(N)) {
+    throw new Error("N debe ser un número entero positivo.");
+  }
+  if (!Array.isArray(intervals) || intervals.length === 0) {
+    throw new Error("Los intervalos deben ser un arreglo no vacío.");
+  }
+  if (typeof mean !== "number") {
+    throw new Error("La media debe ser un número.");
+  }
+  if (typeof std !== "number" || std <= 0) {
+    throw new Error("La desviación estándar debe ser un número positivo.");
+  }
+
   return intervals.map(([start, end]) => {
     const prob = normalCDF(end, mean, std) - normalCDF(start, mean, std);
     return N * prob;
@@ -85,11 +140,28 @@ export function expectedFrequenciesNormal(N, intervals, mean, std) {
 
 // Poisson
 export function factorial(n) {
+  if (typeof n !== "number" || n < 0 || !Number.isInteger(n)) {
+    throw new Error("n debe ser un número entero no negativo.");
+  }
   if (n <= 1) return 1;
   return n * factorial(n - 1);
 }
 
 export function expectedFrequenciesPoisson(N, lambda, maxValue) {
+  if (typeof N !== "number" || N <= 0 || !Number.isInteger(N)) {
+    throw new Error("N debe ser un número entero positivo.");
+  }
+  if (typeof lambda !== "number" || lambda <= 0) {
+    throw new Error("Lambda debe ser un número positivo.");
+  }
+  if (
+    typeof maxValue !== "number" ||
+    maxValue < 0 ||
+    !Number.isInteger(maxValue)
+  ) {
+    throw new Error("maxValue debe ser un número entero no negativo.");
+  }
+
   const expected = [];
   for (let k = 0; k <= maxValue; k++) {
     const prob = (Math.exp(-lambda) * Math.pow(lambda, k)) / factorial(k);
@@ -100,20 +172,46 @@ export function expectedFrequenciesPoisson(N, lambda, maxValue) {
 
 // Chi cuadrado
 export function chiSquared(observed, expected) {
+  if (!Array.isArray(observed) || !Array.isArray(expected)) {
+    throw new Error("Observadas y esperadas deben ser arreglos.");
+  }
   if (observed.length !== expected.length) {
     throw new Error("Longitudes distintas entre observadas y esperadas.");
+  }
+  if (!observed.every((value) => typeof value === "number" && value >= 0)) {
+    throw new Error(
+      "Todos los valores observados deben ser números no negativos."
+    );
+  }
+  if (!expected.every((value) => typeof value === "number" && value > 0)) {
+    throw new Error("Todos los valores esperados deben ser números positivos.");
   }
 
   let chi2 = 0;
   for (let i = 0; i < observed.length; i++) {
-    if (expected[i] > 0) {
-      chi2 += Math.pow(observed[i] - expected[i], 2) / expected[i];
-    }
+    chi2 += Math.pow(observed[i] - expected[i], 2) / expected[i];
   }
   return chi2;
 }
 
 export function calculateDegreesOfFreedom(numClasses, numParamsEstimated) {
+  if (
+    typeof numClasses !== "number" ||
+    numClasses <= 0 ||
+    !Number.isInteger(numClasses)
+  ) {
+    throw new Error("numClasses debe ser un número entero positivo.");
+  }
+  if (
+    typeof numParamsEstimated !== "number" ||
+    numParamsEstimated < 0 ||
+    !Number.isInteger(numParamsEstimated)
+  ) {
+    throw new Error(
+      "numParamsEstimated debe ser un número entero no negativo."
+    );
+  }
+
   return numClasses - numParamsEstimated - 1;
 }
 
@@ -124,6 +222,9 @@ export function chiSquaredTestResult(
 ) {
   const chi2 = chiSquared(observed, expected);
   const df = calculateDegreesOfFreedom(observed.length, numParamsEstimated);
+  if (df <= 0) {
+    throw new Error("Los grados de libertad deben ser mayores a 0.");
+  }
   const critical = jStat.chisquare.inv(0.95, df);
   const passed = chi2 < critical;
 
