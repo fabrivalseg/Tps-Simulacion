@@ -1,6 +1,7 @@
 import React from "react";
 
 function Formulario({ distribucion }) {
+
     if (distribucion === 'default') {
         return (
             <div className='distribucion-parametros'>
@@ -21,6 +22,10 @@ function Formulario({ distribucion }) {
                     <input type="number" step="any" id="max" name="max" required />
                 </div>
                 <div>
+                    <label htmlFor="intervals">Nro Intervalos</label>
+                    <input type="text" name="intervals" id="intervals" placeholder='10' required />
+                </div>
+                <div>
                     <label htmlFor="count">Cantidad De Números</label>
                     <input type="text" name="count" id="count" placeholder='50000' required />
                 </div>
@@ -28,8 +33,27 @@ function Formulario({ distribucion }) {
         )
     }
 
-    if (distribucion === 'exponencial' || distribucion === 'poisson') {
+    if (distribucion === 'exponencial') {
         return (
+            <div className='distribucion-parametros'>
+                <div>
+                    <label htmlFor="lambda">Lambda:</label>
+                    <input type="number" step="any" id="lambda" name="lambda" required />
+                </div>
+                <div>
+                    <label htmlFor="intervals">Nro Intervalos</label>
+                    <input type="text" name="intervals" id="intervals" placeholder='10' required />
+                </div>
+                <div>
+                    <label htmlFor="count">Cantidad De Números</label>
+                    <input type="text" name="count" id="count" placeholder='50000' required />
+                </div>
+            </div>
+        )
+    }
+
+    if (distribucion === 'poisson'){
+        return(
             <div className='distribucion-parametros'>
                 <div>
                     <label htmlFor="lambda">Lambda:</label>
@@ -53,6 +77,10 @@ function Formulario({ distribucion }) {
                 <div>
                     <label htmlFor="stdDev">Desviación Estándar:</label>
                     <input type="number" step="any" id="stdDev" name="stdDev" required placeholder='2.5' />
+                </div>
+                <div>
+                    <label htmlFor="intervals">Nro Intervalos</label>
+                    <input type="text" name="intervals" id="intervals" placeholder='10' required />
                 </div>
                 <div>
                     <label htmlFor="count">Cantidad De Números</label>
