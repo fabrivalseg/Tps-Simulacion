@@ -3,6 +3,13 @@ const { jStat } = jStatPkg;
 
 //crea los intervalos para la prueba de chi cuadrado
 export function createInterval(data, k) {
+  if (!Array.isArray(data) || data.length === 0) {
+    throw new Error("Los datos deben ser un arreglo no vacío.");
+  }
+  if (typeof k !== "number" || k <= 0 || !Number.isInteger(k)) {
+    throw new Error("k debe ser un número entero positivo.");
+  }
+
   const min = Math.min(...data);
   const max = Math.max(...data);
 
@@ -20,6 +27,13 @@ export function createInterval(data, k) {
 
 //cuenta las frecuencas observadas de los intervalos
 export function calculateFrequencies(data, intervals) {
+  if (!Array.isArray(data) || data.length === 0) {
+    throw new Error("Los datos deben ser un arreglo no vacío.");
+  }
+  if (!Array.isArray(intervals) || intervals.length === 0) {
+    throw new Error("Los intervalos deben ser un arreglo no vacío.");
+  }
+
   const frequencies = new Array(intervals.length).fill(0);
 
   data.forEach((value) => {
@@ -35,6 +49,13 @@ export function calculateFrequencies(data, intervals) {
 
 //calcula las frecuencias esperadas para una distribucion uniforme
 export function expectedFrequenciesUniform(data, intervals) {
+  if (!Array.isArray(data) || data.length === 0) {
+    throw new Error("Los datos deben ser un arreglo no vacío.");
+  }
+  if (!Array.isArray(intervals) || intervals.length === 0) {
+    throw new Error("Los intervalos deben ser un arreglo no vacío.");
+  }
+
   const N = data.length;
   const intervalProb = 1 / intervals.length;
 
@@ -43,6 +64,13 @@ export function expectedFrequenciesUniform(data, intervals) {
 
 //calcula las frecuencias esperadas para una distribucion exponencial
 export function expectedFrequenciesExponential(data, intervals) {
+  if (!Array.isArray(data) || data.length === 0) {
+    throw new Error("Los datos deben ser un arreglo no vacío.");
+  }
+  if (!Array.isArray(intervals) || intervals.length === 0) {
+    throw new Error("Los intervalos deben ser un arreglo no vacío.");
+  }
+
   const N = data.length;
   const mean = data.reduce((a, b) => a + b, 0) / N;
   const lambda = 1 / mean;
@@ -59,7 +87,6 @@ function normalCDF(x, mean, std) {
 }
 
 function erf(x) {
-  // Aproximación de Abramowitz y Stegun
   const sign = x < 0 ? -1 : 1;
   x = Math.abs(x);
 
@@ -78,6 +105,13 @@ function erf(x) {
 }
 
 export function expectedFrequenciesNormal(data, intervals) {
+  if (!Array.isArray(data) || data.length === 0) {
+    throw new Error("Los datos deben ser un arreglo no vacío.");
+  }
+  if (!Array.isArray(intervals) || intervals.length === 0) {
+    throw new Error("Los intervalos deben ser un arreglo no vacío.");
+  }
+
   const N = data.length;
   const mean = data.reduce((a, b) => a + b, 0) / N;
   const variance = data.reduce((sum, x) => sum + (x - mean) ** 2, 0) / N;
@@ -89,12 +123,19 @@ export function expectedFrequenciesNormal(data, intervals) {
   });
 }
 
-//calcula las frecuencas esperadas para una distribucion de poisson
+//calcula las frecuencias esperadas para una distribucion de poisson
 export function factorial(n) {
+  if (typeof n !== "number" || n < 0 || !Number.isInteger(n)) {
+    throw new Error("n debe ser un número entero no negativo.");
+  }
   return n <= 1 ? 1 : n * factorial(n - 1);
 }
 
 export function expectedFrequenciesPoisson(data) {
+  if (!Array.isArray(data) || data.length === 0) {
+    throw new Error("Los datos deben ser un arreglo no vacío.");
+  }
+
   const N = data.length;
   const lambda = data.reduce((a, b) => a + b, 0) / N;
   const max = Math.max(...data);
@@ -110,8 +151,18 @@ export function expectedFrequenciesPoisson(data) {
 
 //calcula el estadistico de chi cuadrado
 export function chiSquared(observed, expected) {
+  if (!Array.isArray(observed) || observed.length === 0) {
+    throw new Error(
+      "Las frecuencias observadas deben ser un arreglo no vacío."
+    );
+  }
+  if (!Array.isArray(expected) || expected.length === 0) {
+    throw new Error("Las frecuencias esperadas deben ser un arreglo no vacío.");
+  }
   if (observed.length !== expected.length) {
-    throw new Error("Observed and expected arrays must have the same length.");
+    throw new Error(
+      "Los arreglos de frecuencias observadas y esperadas deben tener la misma longitud."
+    );
   }
 
   let chi2 = 0;
@@ -125,6 +176,23 @@ export function chiSquared(observed, expected) {
 }
 
 export function calculateDegreesOfFreedom(numClasses, numParamsEstimated) {
+  if (
+    typeof numClasses !== "number" ||
+    numClasses <= 0 ||
+    !Number.isInteger(numClasses)
+  ) {
+    throw new Error("El número de clases debe ser un entero positivo.");
+  }
+  if (
+    typeof numParamsEstimated !== "number" ||
+    numParamsEstimated < 0 ||
+    !Number.isInteger(numParamsEstimated)
+  ) {
+    throw new Error(
+      "El número de parámetros estimados debe ser un entero no negativo."
+    );
+  }
+
   return numClasses - numParamsEstimated - 1;
 }
 
@@ -133,6 +201,20 @@ export function chiSquaredTestResult(
   expected,
   numParamsEstimated = 0
 ) {
+  if (!Array.isArray(observed) || observed.length === 0) {
+    throw new Error(
+      "Las frecuencias observadas deben ser un arreglo no vacío."
+    );
+  }
+  if (!Array.isArray(expected) || expected.length === 0) {
+    throw new Error("Las frecuencias esperadas deben ser un arreglo no vacío.");
+  }
+  if (typeof numParamsEstimated !== "number" || numParamsEstimated < 0) {
+    throw new Error(
+      "El número de parámetros estimados debe ser un número no negativo."
+    );
+  }
+
   const chi2 = chiSquared(observed, expected);
   const df = calculateDegreesOfFreedom(observed.length, numParamsEstimated);
   const critical = jStat.chisquare.inv(0.95, df); // alpha = 0.05
@@ -145,44 +227,7 @@ export function chiSquaredTestResult(
     critical: critical,
     passed: passed,
     conclusion: passed
-      ? "No se rechaza la hipótesis nula (ajuste adecuado)"
-      : "Se rechaza la hipótesis nula (mal ajuste)",
+      ? "No se rechaza la hipótesis nula"
+      : "Se rechaza la hipótesis nula",
   };
 }
-
-// Datos supuestamente uniformes
-// const data = [12, 14, 13, 11, 15, 14, 13, 16, 12, 13];
-// const k = 4;
-// const intervals = createInterval(data, k);
-// const observed = calculateFrequencies(data, intervals);
-// const expected = expectedFrequenciesNormal(data, intervals);
-// const result = chiSquaredTestResult(observed, expected, 0);
-// console.log(result);
-
-// Datos supuestamente exponenciales
-// const data = [0.3, 0.7, 0.5, 1.2, 0.9, 0.4, 0.6, 0.8, 1.1, 0.2];
-// const k = 5;
-// const intervals = createInterval(data, k);
-// const observed = calculateFrequencies(data, intervals);
-// const expected = expectedFrequenciesExponential(data, intervals);
-// const result = chiSquaredTestResult(observed, expected, 0);
-// console.log("Exponencial:", result);
-
-// Datos supuestamente normales
-// const data = [10, 11, 12, 11, 13, 14, 13, 12, 11];
-// const k = 4;
-// const intervals = createInterval(data, k);
-// const observed = calculateFrequencies(data, intervals);
-// const expected = expectedFrequenciesNormal(data, intervals);
-// const result = chiSquaredTestResult(observed, expected, 0);
-// console.log("Normal:", result);
-
-// Datos supuestamente Poisson
-// Poisson no necesita intervalos, solo cuentas discretas
-// const data = [0, 1, 1, 2, 1, 3, 2, 2, 0, 1];
-// const maxValue = Math.max(...data);
-// const observed = new Array(maxValue + 1).fill(0);
-// data.forEach((x) => observed[x]++);
-// const expected = expectedFrequenciesPoisson(data);
-// const result = chiSquaredTestResult(observed, expected, 0);
-// console.log("Poisson:", result);
