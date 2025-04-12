@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import algorithmRouter from "./routes/algorithms-router.js";
+import algorithmRouter from "./routes/routes.js";
 
 const app = express();
 app.use(express.json());

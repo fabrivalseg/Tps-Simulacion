@@ -114,9 +114,6 @@ function App() {
 
       {datos.data && datos.data.length > 0 && (
         <div className={`results-container ${showResults ? "show" : ""}`}>
-          <div className="card datos-card">
-            
-          </div>
 
           {datos.observed && (
             <div className="card histograma-card">

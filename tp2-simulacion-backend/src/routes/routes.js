@@ -4,7 +4,7 @@ import {
   exponential,
   poisson,
   normal,
-} from "../algorithms/algorithms.js";
+} from "../services/generador.js";
 
 import {
   createInterval,
@@ -14,7 +14,7 @@ import {
   expectedFrequenciesNormal,
   expectedFrequenciesPoisson,
   chiSquaredTestResult,
-} from "../algorithms/chi-cuadrado.js";
+} from "../services/chi-cuadrado.js";
 
 const router = Router();
 
