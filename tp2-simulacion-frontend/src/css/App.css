@@ -282,13 +282,13 @@ label {
 }
 
 .boton-csv {
-  background-color: var(--success-color);
+  background-color: var(--primary-color);
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
 }
 
 .boton-csv:hover {
-  background-color: #0ca678;
+  background-color: #4f46e5;
 }
 
 .results-container {

@@ -80,6 +80,23 @@ function App() {
     }
   }
 
+  const generarCSV = () => {
+    if (!datos.data || datos.data.length === 0) {
+      alert("No hay datos para exportar")
+      return
+    }
+  
+    const csvContent = "data:text/csv;charset=utf-8," + datos.data.join("\n")
+  
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement("a")
+    link.setAttribute("href", encodedUri)
+    link.setAttribute("download", "datos_generados.csv")
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   return (
     <main className="app-container">
       <div className="app-header">
@@ -114,7 +131,16 @@ function App() {
 
       {datos.data && datos.data.length > 0 && (
         <div className={`results-container ${showResults ? "show" : ""}`}>
-
+          
+          <div className="datos-header">
+              <h2>Datos generados ({datos.data.length})</h2>
+              <button
+                className="boton boton-csv"
+                onClick={generarCSV}
+              >
+                Descargar CSV
+              </button>
+            </div>
           {datos.observed && (
             <div className="card histograma-card">
               <h2>Histograma (Frecuencias Observadas)</h2>
