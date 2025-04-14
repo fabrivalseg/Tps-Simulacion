@@ -14,6 +14,7 @@ import {
   expectedFrequenciesNormal,
   expectedFrequenciesPoisson,
   chiSquaredTestResult,
+  groupLowExpectedFrequencies,
 } from "../services/chi-cuadrado.js";
 
 const router = Router();
@@ -29,10 +30,20 @@ router.post("/uniform", (req, res) => {
     const data = uniform(min, max, count);
     const intervals = createInterval(data, k);
     const observed = calculateFrequencies(data, intervals);
-    const expected = expectedFrequenciesUniform(data.length, intervals); // solo pasamos N y los intervalos
-    const result = chiSquaredTestResult(observed, expected, 0);
+    const expected = expectedFrequenciesUniform(data.length, intervals);
 
-    res.json({ data, observed, expected, intervals, ...result });
+    const { groupedObserved, groupedExpected, groupedIntervals } =
+      groupLowExpectedFrequencies(observed, expected, intervals);
+
+    const result = chiSquaredTestResult(groupedObserved, groupedExpected, 0);
+
+    res.json({
+      data,
+      observed: groupedObserved,
+      expected: groupedExpected,
+      intervals: groupedIntervals,
+      ...result,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -53,28 +64,19 @@ router.post("/exponencial", (req, res) => {
       intervals,
       lambda
     );
-    const result = chiSquaredTestResult(observed, expected, 1);
 
-    res.json({ data, observed, expected, intervals, ...result });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+    const { groupedObserved, groupedExpected, groupedIntervals } =
+      groupLowExpectedFrequencies(observed, expected, intervals);
 
-// Poisson
-router.post("/poisson", (req, res) => {
-  try {
-    const lambda = parseFloat(req.body.lambda);
-    const count = parseInt(req.body.count);
+    const result = chiSquaredTestResult(groupedObserved, groupedExpected, 0);
 
-    const data = poisson(lambda, count);
-    const maxValue = Math.max(...data);
-    const observed = new Array(maxValue + 1).fill(0);
-    data.forEach((x) => observed[x]++);
-    const expected = expectedFrequenciesPoisson(data.length, lambda, maxValue);
-    const result = chiSquaredTestResult(observed, expected, 1);
-
-    res.json({ data, observed, expected, ...result });
+    res.json({
+      data,
+      observed: groupedObserved,
+      expected: groupedExpected,
+      intervals: groupedIntervals,
+      ...result,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -97,9 +99,38 @@ router.post("/normal", (req, res) => {
       mean,
       stdDev
     );
-    const result = chiSquaredTestResult(observed, expected, 2);
 
-    res.json({ data, observed, expected, intervals, ...result });
+    const { groupedObserved, groupedExpected, groupedIntervals } =
+      groupLowExpectedFrequencies(observed, expected, intervals);
+
+    const result = chiSquaredTestResult(groupedObserved, groupedExpected, 0);
+
+    res.json({
+      data,
+      observed: groupedObserved,
+      expected: groupedExpected,
+      intervals: groupedIntervals,
+      ...result,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Poisson
+router.post("/poisson", (req, res) => {
+  try {
+    const lambda = parseFloat(req.body.lambda);
+    const count = parseInt(req.body.count);
+
+    const data = poisson(lambda, count);
+    const maxValue = Math.max(...data);
+    const observed = new Array(maxValue + 1).fill(0);
+    data.forEach((x) => observed[x]++);
+    const expected = expectedFrequenciesPoisson(data.length, lambda, maxValue);
+    const result = chiSquaredTestResult(observed, expected, 0);
+
+    res.json({ data, observed, expected, ...result });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

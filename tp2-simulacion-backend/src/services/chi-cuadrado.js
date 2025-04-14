@@ -1,6 +1,47 @@
 import jStatPkg from "jstat";
 const { jStat } = jStatPkg;
 
+// Agrupa intervalos con frecuencias esperadas < 5 hacia abajo
+export function groupLowExpectedFrequencies(observed, expected, intervals) {
+  const groupedObserved = [];
+  const groupedExpected = [];
+  const groupedIntervals = [];
+
+  let tempObs = 0;
+  let tempExp = 0;
+  let tempStart = intervals[0][0];
+
+  for (let i = 0; i < expected.length; i++) {
+    tempObs += observed[i];
+    tempExp += expected[i];
+
+    if (tempExp >= 5) {
+      groupedObserved.push(tempObs);
+      groupedExpected.push(tempExp);
+      groupedIntervals.push([tempStart, intervals[i][1]]);
+      // reiniciar acumuladores
+      tempObs = 0;
+      tempExp = 0;
+      tempStart = intervals[i + 1]?.[0]; // inicio del siguiente
+    }
+  }
+
+  // Si quedó algo sin agrupar, se lo suma al último grupo
+  if (tempExp > 0) {
+    if (groupedObserved.length === 0) {
+      throw new Error(
+        "No se puede agrupar adecuadamente para cumplir con la prueba."
+      );
+    }
+
+    groupedObserved[groupedObserved.length - 1] += tempObs;
+    groupedExpected[groupedExpected.length - 1] += tempExp;
+    groupedIntervals[groupedIntervals.length - 1][1] = intervals.at(-1)[1];
+  }
+
+  return { groupedObserved, groupedExpected, groupedIntervals };
+}
+
 // Crea intervalos
 export function createInterval(data, k) {
   if (!Array.isArray(data) || data.length === 0) {
@@ -169,7 +210,7 @@ export function expectedFrequenciesPoisson(N, lambda, maxValue) {
   }
   return expected;
 }
-
+// --- calculo de chi2 ---
 // Chi cuadrado
 export function chiSquared(observed, expected) {
   if (!Array.isArray(observed) || !Array.isArray(expected)) {
@@ -193,7 +234,7 @@ export function chiSquared(observed, expected) {
   }
   return chi2;
 }
-
+// grados de libertad
 export function calculateDegreesOfFreedom(numClasses, numParamsEstimated) {
   if (
     typeof numClasses !== "number" ||
@@ -215,16 +256,26 @@ export function calculateDegreesOfFreedom(numClasses, numParamsEstimated) {
   return numClasses - numParamsEstimated - 1;
 }
 
+// Prueba chi cuadrado
 export function chiSquaredTestResult(
   observed,
   expected,
-  numParamsEstimated = 0
+  numParamsEstimated = 0,
+  intervals = null
 ) {
-  const chi2 = chiSquared(observed, expected);
   const df = calculateDegreesOfFreedom(observed.length, numParamsEstimated);
   if (df <= 0) {
-    throw new Error("Los grados de libertad deben ser mayores a 0.");
+    return {
+      chi2: null,
+      df: null,
+      critical: null,
+      passed: false,
+      conclusion:
+        "No se puede aplicar la prueba chi-cuadrado: los grados de libertad son menores o iguales a 0.",
+    };
   }
+
+  const chi2 = chiSquared(observed, expected);
   const critical = jStat.chisquare.inv(0.95, df);
   const passed = chi2 < critical;
 
@@ -234,7 +285,7 @@ export function chiSquaredTestResult(
     critical,
     passed,
     conclusion: passed
-      ? "No se rechaza la hipótesis nula"
-      : "Se rechaza la hipótesis nula",
+      ? "No se rechaza la hipótesis nula (ajuste adecuado)"
+      : "Se rechaza la hipótesis nula (ajuste inadecuado)",
   };
 }
