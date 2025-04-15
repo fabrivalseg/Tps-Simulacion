@@ -5,6 +5,7 @@ import "./css/App.css";
 import SelectorDistribucion from "./components/SelectorDistribucion.jsx";
 import Formulario from "./components/Formulario.jsx";
 import Histograma from "./components/Histograma.jsx";
+import HistogramaChi2 from "./components/HistogramaChi.jsx";
 
 function App() {
   const [distribucion, setDistribucion] = useState("default");
@@ -80,7 +81,6 @@ function App() {
         body: JSON.stringify(body),
       });
       const data = await response.json();
-      console.log(data);
       setDatos(data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -88,27 +88,7 @@ function App() {
       setLoading(false);
     }
   };
-
-  // const generarCSV = () => {
-  //   if (!datos.data || datos.data.length === 0) {
-  //     alert("No hay datos para exportar");
-  //     return;
-  //   }
-
-  //   const headers = ["Dato"];
-  //   const rows = datos.data.map((dato) => [`${dato}`]); // Comillas dobles para proteger la coma decimal
-  //   const csvContent =
-  //     "data:text/csv;charset=utf-8," +
-  //     [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
-
-  //   const encodedUri = encodeURI(csvContent);
-  //   const link = document.createElement("a");
-  //   link.setAttribute("href", encodedUri);
-  //   link.setAttribute("download", "datos_generados.csv");
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  // };
+  
   const generarCSV = () => {
     const csvContent =
       "data\n" +
@@ -182,6 +162,7 @@ function App() {
                 <Histograma
                   intervals={datos.intervals}
                   observed={datos.observed}
+                  color={"#8884d8"}
                 />
               </div>
             </div>
@@ -189,7 +170,16 @@ function App() {
 
           {datos.data && datos.data.length > 0 && (
             <div className="card resultado-card">
-              <h2>Resultado Prueba Ji-Cuadrado</h2>
+              <h2 style={{color: "#4f81bd"}}>Resultado Prueba Ji-Cuadrado</h2>
+              <div className="histograma-container">
+                <HistogramaChi2
+                  intervals={datos.groupedIntervals}
+                  observed={datos.groupedObserved}
+                  expected={datos.groupedExpected}
+                  colorObserved={"#4f81bd"}
+                  colorExpected={"#82ca9d"}
+                />
+              </div>
               <div className="resultado-grid">
                 <div className="resultado-stats">
                   <div className="stat-item">
@@ -227,13 +217,13 @@ function App() {
                   <div className="frecuencia-item">
                     <h3>Frecuencias observadas:</h3>
                     <div className="frecuencia-values">
-                      {datos.observed?.join(", ")}
+                      {datos.groupedObserved?.join(", ")}
                     </div>
                   </div>
                   <div className="frecuencia-item">
                     <h3>Frecuencia esperada por clase:</h3>
                     <div className="frecuencia-values">
-                      {datos.expected?.join(", ")}
+                      {datos.groupedExpected?.map((valor) => Math.round(valor)).join(", ")}
                     </div>
                   </div>
                 </div>

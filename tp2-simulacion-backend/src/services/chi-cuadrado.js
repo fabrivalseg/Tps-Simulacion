@@ -285,7 +285,7 @@ export function chiSquaredTestResult(
     critical,
     passed,
     conclusion: passed
-      ? "No se rechaza la hipótesis nula (ajuste adecuado)"
-      : "Se rechaza la hipótesis nula (ajuste inadecuado)",
+      ? "No se rechaza la hipótesis nula"
+      : "Se rechaza la hipótesis nula",
   };
 }

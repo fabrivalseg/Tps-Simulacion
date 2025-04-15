@@ -8,7 +8,7 @@ import {
     CartesianGrid,
   } from 'recharts'
   
-  const Histograma = ({ intervals, observed }) => {
+  const Histograma = ({ intervals, observed, color }) => {
 
 
     if (!Array.isArray(observed) || observed.length === 0) {
@@ -48,7 +48,7 @@ import {
             />
             <YAxis allowDecimals={false} />
             <Tooltip />
-            <Bar dataKey="frecuencia" fill="#8884d8" />
+            <Bar dataKey="frecuencia" fill={color} />
           </BarChart>
         </ResponsiveContainer>
       </div>

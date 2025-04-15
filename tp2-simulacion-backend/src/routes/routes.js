@@ -39,9 +39,12 @@ router.post("/uniform", (req, res) => {
 
     res.json({
       data,
-      observed: groupedObserved,
-      expected: groupedExpected,
-      intervals: groupedIntervals,
+      observed: observed,
+      expected: expected,
+      groupedObserved: groupedObserved,
+      groupedExpected: groupedExpected,
+      intervals: intervals,
+      groupedIntervals: groupedIntervals,
       ...result,
     });
   } catch (error) {
@@ -72,9 +75,12 @@ router.post("/exponencial", (req, res) => {
 
     res.json({
       data,
-      observed: groupedObserved,
-      expected: groupedExpected,
-      intervals: groupedIntervals,
+      observed: observed,
+      expected: expected,
+      groupedObserved: groupedObserved,
+      groupedExpected: groupedExpected,
+      intervals: intervals,
+      groupedIntervals: groupedIntervals,
       ...result,
     });
   } catch (error) {
@@ -107,9 +113,12 @@ router.post("/normal", (req, res) => {
 
     res.json({
       data,
-      observed: groupedObserved,
-      expected: groupedExpected,
-      intervals: groupedIntervals,
+      observed: observed,
+      expected: expected,
+      groupedObserved: groupedObserved,
+      groupedExpected: groupedExpected,
+      intervals: intervals,
+      groupedIntervals: groupedIntervals,
       ...result,
     });
   } catch (error) {

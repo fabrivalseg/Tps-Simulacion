@@ -506,7 +506,7 @@ label {
 }
 
 .stat-badge.success {
-  background-color: var(--success-color);
+  background-color: #82ca9d;
   color: white;
 }
 
@@ -568,6 +568,15 @@ label {
   white-space: nowrap;
   color: var(--gray-800);
   border: 1px solid var(--gray-300);
+}
+
+.frecuencia-values::-webkit-scrollbar{
+  background-color: #4d4d4d;
+}
+
+
+.frecuencia-values::-webkit-scrollbar-thumb {
+  background-color: #666666;
 }
 
 
